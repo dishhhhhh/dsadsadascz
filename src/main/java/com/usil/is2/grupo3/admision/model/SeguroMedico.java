@@ -2,6 +2,7 @@ package com.usil.is2.grupo3.admision.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "seguro_medico")
@@ -17,6 +18,8 @@ public class SeguroMedico {
     private String estadoCobertura;
 
     @NotBlank(message = "El tipo de seguro es obligatorio")
+    @Pattern(regexp = "Seguro Regular \\(\\+SEGURO\\)|Seguro Potestativo \\(\\+SALUD\\)|Seguro Agrario|SCTR \\(\\+PROTECCIÓN\\)|Seguro \\+VIDA",
+             message = "El tipo de seguro debe ser uno de los permitidos: Seguro Regular (+SEGURO), Seguro Potestativo (+SALUD), Seguro Agrario, SCTR (+PROTECCIÓN) o Seguro +VIDA")
     @Column(name = "tipo_seguro", length = 50, nullable = false)
     private String tipoSeguro;
 
