@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{compartido/layout :: master('Apertura de Historia Clínica', ~{::section})}">
+
+    <section>
+
+        <style>
+            .container { background-color: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+            .form-group { margin-bottom: 15px; }
+            label { display: block; font-weight: bold; margin-bottom: 5px; }
+            input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+            .error { color: red; font-size: 0.9em; margin-top: 5px; display: block; }
+            .alert-error { background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+            .alert-success { background-color: #d4edda; color: #155724; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+            .btn { background-color: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
+            .btn:hover { background-color: #219150; }
+            .info-paciente { background-color: #e9ecef; padding: 15px; border-radius: 4px; margin-bottom: 20px; border-left: 4px solid #2c3e50; }
+        </style>
+
+        <div class="container">
+            <h2>Apertura de Historia Clínica Base</h2>
+
+            <div class="info-paciente" th:if="${pacienteInfo != null}">
+                <strong>Paciente:</strong> <span th:text="${pacienteInfo.nombres + ' ' + pacienteInfo.apellidos}"></span><br>
+                <strong>DNI:</strong> <span th:text="${pacienteInfo.numeroDni}"></span>
+            </div>
+
+            <div th:if="${param.exito}" class="alert-success">
+                ¡Historia Clínica generada y vinculada exitosamente!
+            </div>
+            <div th:if="${errorDuplicado}" class="alert-error" th:text="${errorDuplicado}"></div>
+
+            <form th:action="@{/admision/historia/registrar(idPaciente=${pacienteInfo.idPaciente})}" th:object="${historiaClinica}" method="post">
+
+                <div class="form-group">
+                    <label for="tipoSangre">Tipo de Sangre:</label>
+                    <input type="text" id="tipoSangre" th:field="*{tipoSangre}" placeholder="Ej: O+, A-, AB+">
+                    <span class="error" th:if="${#fields.hasErrors('tipoSangre')}" th:errors="*{tipoSangre}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="alergias">Alergias Conocidas:</label>
+                    <textarea id="alergias" th:field="*{alergias}" rows="3" placeholder="Medicamentos, alimentos, etc. Escriba 'Ninguna' si no aplica."></textarea>
+                    <span class="error" th:if="${#fields.hasErrors('alergias')}" th:errors="*{alergias}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="antecedentesFamiliares">Antecedentes Familiares:</label>
+                    <textarea id="antecedentesFamiliares" th:field="*{antecedentesFamiliares}" rows="3" placeholder="Enfermedades hereditarias, diabetes, hipertensión, etc."></textarea>
+                    <span class="error" th:if="${#fields.hasErrors('antecedentesFamiliares')}" th:errors="*{antecedentesFamiliares}"></span>
+                </div>
+
+                <button type="submit" class="btn">Guardar Historia Clínica</button>
+            </form>
+        </div>
+
+    </section>
+</th:block>
+</html>

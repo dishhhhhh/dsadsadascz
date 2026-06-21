@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{compartido/layout :: master('Reserva de Citas Médicas', ~{::section})}">
+
+    <section>
+
+        <style>
+            .container { background-color: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;}
+            .form-group { margin-bottom: 15px; }
+            label { display: block; font-weight: bold; margin-bottom: 5px; }
+            input[type="text"], select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+            .alert-error { background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+            .alert-success { background-color: #d4edda; color: #155724; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+            .btn { background-color: #2980b9; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px;}
+            .btn-search { background-color: #7f8c8d; }
+            .btn:hover { background-color: #1c5980; }
+            .paciente-card { background-color: #e8f4f8; padding: 15px; border-left: 4px solid #2980b9; border-radius: 4px; margin-bottom: 20px; }
+        </style>
+
+        <div class="container">
+            <h2>Agendar Cita Médica</h2>
+
+            <div th:if="${param.exito}" class="alert-success">
+                ¡La cita ha sido agendada exitosamente! El horario ha sido bloqueado.
+            </div>
+            <div th:if="${errorBusqueda}" class="alert-error" th:text="${errorBusqueda}"></div>
+
+            <form th:action="@{/citas/reservar}" method="get">
+                <div class="form-group">
+                    <label for="dni">Buscar Paciente por DNI:</label>
+                    <input type="text" id="dni" name="dni" th:value="${dniBuscado}" placeholder="Ingrese el DNI a buscar" required maxlength="8">
+                </div>
+                <button type="submit" class="btn btn-search">Buscar Paciente</button>
+            </form>
+        </div>
+
+        <div class="container" th:if="${pacienteEncontrado != null}">
+
+            <div th:if="${error}" class="alert-error" th:text="${error}"></div>
+
+            <div class="paciente-card">
+                <strong>Paciente Validado:</strong> <span th:text="${pacienteEncontrado.nombres + ' ' + pacienteEncontrado.apellidos}"></span><br>
+                <strong>DNI:</strong> <span th:text="${pacienteEncontrado.numeroDni}"></span>
+            </div>
+
+            <form th:action="@{/citas/reservar}" method="post">
+
+                <input type="hidden" name="idPaciente" th:value="${pacienteEncontrado.idPaciente}">
+
+                <div class="form-group">
+                    <label for="idDisponibilidad">Horarios Disponibles (Hoy):</label>
+                    <select id="idDisponibilidad" name="idDisponibilidad" required>
+                        <option value="">-- Elija un turno --</option>
+                        <option th:each="horario : ${horarios}"
+                                th:value="${horario.idDisponibilidadMedica}"
+                                th:text="${horario.medico.nombres + ' ' + horario.medico.apellidos + ' - ' + horario.horaInicio + ' a ' + horario.horaFin}">
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">Confirmar Reserva</button>
+            </form>
+        </div>
+
+    </section>
+</th:block>
+</html>
