@@ -8,11 +8,30 @@
             .container { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
             .form-group { margin-bottom: 15px; }
             label { display: block; font-weight: bold; margin-bottom: 5px; }
-            input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+            input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; transition: all 0.3s ease; }
+            input:focus, select:focus { border-color: #3498db; outline: none; box-shadow: 0 0 5px rgba(52, 152, 219, 0.3); }
             .error { color: red; font-size: 0.9em; margin-top: 5px; display: block; }
-            .btn { background-color: #2c3e50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
+            .btn { background-color: #2c3e50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; transition: background 0.3s; }
             .btn:hover { background-color: #1a252f; }
             .alert-success { background-color: #d4edda; color: #155724; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+            
+            /* Estilos de integración con RENIEC */
+            .dni-input-container { display: flex; gap: 10px; }
+            .btn-buscar { background-color: #3498db; width: auto; font-size: 14px; padding: 10px 15px; margin: 0; white-space: nowrap; }
+            .btn-buscar:hover { background-color: #2980b9; }
+            .btn-buscar:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+            .dni-feedback { display: block; margin-top: 5px; font-size: 0.85em; font-weight: bold; }
+            .dni-feedback.loading { color: #3498db; }
+            .dni-feedback.success { color: #27ae60; }
+            .dni-feedback.error { color: #c0392b; }
+            
+            @keyframes highlight-fade {
+                0% { background-color: #e8f8f5; border-color: #2ecc71; box-shadow: 0 0 8px rgba(46, 204, 113, 0.5); }
+                100% { background-color: white; border-color: #ccc; box-shadow: none; }
+            }
+            .autocompleted-highlight {
+                animation: highlight-fade 2s ease-out;
+            }
         </style>
 
         <div class="container">
@@ -26,7 +45,11 @@
 
                 <div class="form-group">
                     <label for="numeroDni">Número de DNI:</label>
-                    <input type="text" id="numeroDni" th:field="*{numeroDni}" placeholder="Ej: 12345678">
+                    <div class="dni-input-container">
+                        <input type="text" id="numeroDni" th:field="*{numeroDni}" placeholder="Ej: 12345678" maxlength="8">
+                        <button type="button" id="btnBuscarReniec" class="btn btn-buscar">Buscar RENIEC</button>
+                    </div>
+                    <span id="dniFeedback" class="dni-feedback"></span>
                     <span class="error" th:if="${#fields.hasErrors('numeroDni')}" th:errors="*{numeroDni}"></span>
                 </div>
 
@@ -60,6 +83,77 @@
             </form>
         </div>
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const dniInput = document.getElementById('numeroDni');
+                const btnBuscar = document.getElementById('btnBuscarReniec');
+                const feedback = document.getElementById('dniFeedback');
+                
+                const inputNombres = document.getElementById('nombres');
+                const inputApellidos = document.getElementById('apellidos');
+                const inputFechaNacimiento = document.getElementById('fechaNacimiento');
+
+                function buscarDni() {
+                    const dni = dniInput.value.trim();
+                    
+                    if (!/^\d{8}$/.test(dni)) {
+                        feedback.textContent = "El DNI debe tener exactamente 8 dígitos numéricos.";
+                        feedback.className = "dni-feedback error";
+                        return;
+                    }
+
+                    feedback.textContent = "Buscando en RENIEC...";
+                    feedback.className = "dni-feedback loading";
+                    btnBuscar.disabled = true;
+                    dniInput.disabled = true;
+
+                    fetch(`/api/reniec/${dni}`)
+                        .then(response => {
+                            if (response.status === 200) {
+                                return response.json();
+                            } else if (response.status === 404) {
+                                throw new Error("DNI no encontrado en la base de datos de RENIEC.");
+                            } else {
+                                throw new Error("Error de conexión al servidor de RENIEC.");
+                            }
+                        })
+                        .then(data => {
+                            inputNombres.value = data.nombres;
+                            inputApellidos.value = `${data.apellidoPaterno} ${data.apellidoMaterno}`;
+                            inputFechaNacimiento.value = data.fechaNacimiento;
+
+                            feedback.textContent = "¡Datos personales cargados exitosamente desde RENIEC!";
+                            feedback.className = "dni-feedback success";
+
+                            // Destello visual de autocompletado exitoso
+                            [inputNombres, inputApellidos, inputFechaNacimiento].forEach(input => {
+                                input.classList.remove('autocompleted-highlight');
+                                void input.offsetWidth; // Reflow
+                                input.classList.add('autocompleted-highlight');
+                            });
+                        })
+                        .catch(error => {
+                            feedback.textContent = error.message;
+                            feedback.className = "dni-feedback error";
+                        })
+                        .finally(() => {
+                            btnBuscar.disabled = false;
+                            dniInput.disabled = false;
+                        });
+                }
+
+                btnBuscar.addEventListener('click', buscarDni);
+
+                dniInput.addEventListener('input', function() {
+                    if (dniInput.value.trim().length === 8) {
+                        buscarDni();
+                    } else {
+                        feedback.textContent = "";
+                        feedback.className = "dni-feedback";
+                    }
+                });
+            });
+        </script>
     </section>
 </th:block>
 </html>
