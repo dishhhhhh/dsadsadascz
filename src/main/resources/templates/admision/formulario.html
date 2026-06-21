@@ -38,8 +38,9 @@
         <div class="container">
             <h2>Registro de Nuevo Paciente</h2>
 
-            <div th:if="${param.exito}" class="alert-success">
-                ¡El paciente ha sido registrado exitosamente en el sistema!
+            <div th:if="${param.exito}" class="alert-success" style="display: flex; justify-content: space-between; align-items: center; gap: 15px;">
+                <span>¡El paciente ha sido registrado exitosamente en el sistema!</span>
+                <a th:if="${param.idPaciente}" th:href="@{/admision/historia/registrar(idPaciente=${param.idPaciente})}" class="btn" style="width: auto; text-decoration: none; background-color: #27ae60; margin: 0; padding: 8px 15px; font-size: 14px; white-space: nowrap; color: white;">Continuar con el registro</a>
             </div>
 
             <form th:action="@{/admision/registro}" th:object="${paciente}" method="post">

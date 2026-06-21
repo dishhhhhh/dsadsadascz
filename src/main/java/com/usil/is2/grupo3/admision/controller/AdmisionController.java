@@ -45,10 +45,10 @@ public class AdmisionController {
             return "admision/formulario";
         }
 
-        // Si t odo está correcto, guardamos usando el servicio que creamos en la Fase 3
-        admisionService.registrarPaciente(paciente);
+        // Si todo está correcto, se guarda el paciente en la base de datos
+        Paciente pacienteGuardado = admisionService.registrarPaciente(paciente);
 
-        // Redirigimos a la misma página limpiando el formulario y enviando un mensaje de éxito por la URL
-        return "redirect:/admision/registro?exito";
+        // se redirige a la misma página pero con un mensaje de éxito y el ID del paciente recién registrado
+        return "redirect:/admision/registro?exito&idPaciente=" + pacienteGuardado.getIdPaciente();
     }
 }
