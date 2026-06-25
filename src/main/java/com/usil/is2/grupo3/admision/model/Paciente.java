@@ -59,6 +59,7 @@ public class Paciente {
     public void setNumeroDni(String numeroDni) { this.numeroDni = numeroDni; }
 
     public String getNombres() { return nombres; }
+    public String getNombreCompleto() { return this.nombres + " " + this.apellidos; }
     public void setNombres(String nombres) { this.nombres = nombres; }
 
     public String getApellidos() { return apellidos; }

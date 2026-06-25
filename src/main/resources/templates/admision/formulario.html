@@ -15,6 +15,7 @@
             .btn:hover { background-color: #1a252f; }
             .btn:disabled { background-color: #7f8c8d; cursor: not-allowed; opacity: 0.7; }
             .alert-success { background-color: #d4edda; color: #155724; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+            .alert-error { background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
             
             /* Estilos de integración con RENIEC y EsSalud */
             .dni-input-container { display: flex; gap: 10px; }
@@ -37,7 +38,7 @@
 
         <div class="container">
             <h2>Registro de Nuevo Paciente</h2>
-
+            <div th:if="${errorDni}" class="alert-error" th:text="${errorDni}"></div>
             <div th:if="${param.exito}" class="alert-success" style="display: flex; justify-content: space-between; align-items: center; gap: 15px;">
                 <span>¡El paciente ha sido registrado exitosamente en el sistema!</span>
                 <a th:if="${param.idPaciente}" th:href="@{/admision/historia/registrar(idPaciente=${param.idPaciente})}" class="btn" style="width: auto; text-decoration: none; background-color: #27ae60; margin: 0; padding: 8px 15px; font-size: 14px; white-space: nowrap; color: white;">Continuar con el registro</a>

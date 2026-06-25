@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{compartido/layout :: master('Cita Registrada', ~{::section})}">
+
+    <section>
+        <style>
+            .container { background-color: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+            .card-header { background-color: #27ae60; color: white; padding: 20px; border-radius: 6px 6px 0 0; }
+            .card-body { padding: 20px; border: 1px solid #ddd; border-top: none; }
+            .card-footer { padding: 15px 20px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 6px 6px; background-color: #f8f9fa; }
+            .card-body p { margin: 10px 0; }
+            .btn { background-color: #2980b9; color: white; padding: 10px 20px; border: none; border-radius: 4px; text-decoration: none; font-size: 15px; display: inline-block; }
+            .btn:hover { background-color: #1c5980; }
+        </style>
+
+        <div class="container">
+            <div class="card-header">
+                <h3>✅ Cita Registrada Correctamente</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Número de cita:</strong> <span th:text="${cita.idCitaMedica}"></span></p>
+                <p><strong>Paciente:</strong> <span th:text="${cita.paciente.nombres + ' ' + cita.paciente.apellidos}"></span></p>
+                <p><strong>Médico:</strong> <span th:text="${cita.disponibilidadMedica.medico.nombres + ' ' + cita.disponibilidadMedica.medico.apellidos}"></span></p>
+                <p><strong>Especialidad:</strong> <span th:text="${cita.disponibilidadMedica.medico.especialidad}"></span></p>
+                <p><strong>Fecha:</strong> <span th:text="${cita.disponibilidadMedica.fechaTurno}"></span></p>
+                <p><strong>Hora:</strong> <span th:text="${cita.disponibilidadMedica.horaInicio + ' - ' + cita.disponibilidadMedica.horaFin}"></span></p>
+                <p><strong>Estado:</strong> <span th:text="${cita.estadoCita}"></span></p>
+            </div>
+            <div class="card-footer">
+                <a href="/citas/reservar" class="btn">Nueva Reserva</a>
+            </div>
+        </div>
+
+    </section>
+</th:block>
+</html>

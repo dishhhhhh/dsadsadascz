@@ -62,4 +62,31 @@ public class CitaService {
 
         return historialCitas;
     }
+
+    @Transactional(readOnly = true)
+    public CitaMedica obtenerPorId(Integer idCitaMedica) {
+
+        return citaMedicaRepository.findById(idCitaMedica)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Cita no encontrada"));
+    }
+
+    @Transactional
+    public void cancelarCita(Integer idCitaMedica) {
+
+        CitaMedica cita = citaMedicaRepository.findById(idCitaMedica)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Cita no encontrada"));
+
+        cita.setEstadoCita("Cancelada");
+
+        DisponibilidadMedica disponibilidad =
+                cita.getDisponibilidadMedica();
+
+        disponibilidad.setEstadoTurno("Disponible");
+
+        disponibilidadRepository.save(disponibilidad);
+        citaMedicaRepository.save(cita);
+    }
+
 }

@@ -2,6 +2,7 @@ package com.usil.is2.grupo3.citas.controller;
 
 import com.usil.is2.grupo3.admision.model.Paciente;
 import com.usil.is2.grupo3.admision.repository.PacienteRepository;
+import com.usil.is2.grupo3.citas.model.CitaMedica;
 import com.usil.is2.grupo3.citas.model.DisponibilidadMedica;
 import com.usil.is2.grupo3.citas.repository.DisponibilidadMedicaRepository;
 import com.usil.is2.grupo3.citas.service.CitaService;
@@ -60,15 +61,51 @@ public class CitaController {
                                 @RequestParam("idDisponibilidad") Integer idDisponibilidad,
                                 Model model) {
         try {
-            citaService.reservarCita(idPaciente, idDisponibilidad);
-            return "redirect:/citas/reservar?exito=true";
+            CitaMedica cita = citaService.reservarCita(idPaciente, idDisponibilidad);
+            return "redirect:/citas/confirmacion?idCita=" + cita.getIdCitaMedica();
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
-            // Si hay error al guardar, se recarga la data para que no explote la página
             model.addAttribute("pacienteEncontrado", pacienteRepository.findById(idPaciente).orElse(null));
             model.addAttribute("horarios", disponibilidadRepository
                     .findByMedico_IdMedicoAndFechaTurnoAndEstadoTurno(1, LocalDate.now(), "Disponible"));
             return "citas/reserva";
         }
     }
+
+    @GetMapping("/confirmacion")
+    public String confirmacion(
+            @RequestParam Integer idCita,
+            Model model)
+    {
+
+        model.addAttribute(
+                "cita",
+                citaService.obtenerPorId(idCita)
+        );
+
+        return "citas/confirmacion";
+    }
+
+    @GetMapping("/historial")
+    public String historial(
+            @RequestParam Integer idPaciente,
+            Model model) {
+
+        model.addAttribute(
+                "citas",
+                citaService.obtenerCitasActivasDelPaciente(idPaciente)
+        );
+
+        return "citas/listado";
+    }
+
+    @PostMapping("/cancelar")
+    public String cancelar(
+            @RequestParam Integer idCita) {
+
+        citaService.cancelarCita(idCita);
+
+        return "redirect:/citas/reservar";
+    }
+
 }

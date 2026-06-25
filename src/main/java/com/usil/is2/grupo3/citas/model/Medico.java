@@ -39,6 +39,7 @@ public class Medico {
     public void setNumeroCmp(String numeroCmp) { this.numeroCmp = numeroCmp; }
 
     public String getNombres() { return nombres; }
+    public String getNombreCompleto() { return this.nombres + " " + this.apellidos; }
     public void setNombres(String nombres) { this.nombres = nombres; }
 
     public String getApellidos() { return apellidos; }

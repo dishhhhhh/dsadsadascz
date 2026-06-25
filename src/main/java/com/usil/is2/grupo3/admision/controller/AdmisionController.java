@@ -46,9 +46,13 @@ public class AdmisionController {
         }
 
         // Si todo está correcto, se guarda el paciente en la base de datos
-        Paciente pacienteGuardado = admisionService.registrarPaciente(paciente);
-
-        // se redirige a la misma página pero con un mensaje de éxito y el ID del paciente recién registrado
-        return "redirect:/admision/registro?exito&idPaciente=" + pacienteGuardado.getIdPaciente();
+        try {
+            Paciente pacienteGuardado = admisionService.registrarPaciente(paciente);
+            return "redirect:/admision/registro?exito&idPaciente=" + pacienteGuardado.getIdPaciente();
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            model.addAttribute("seguros", seguroMedicoRepository.findAll());
+            model.addAttribute("errorDni", "El DNI " + paciente.getNumeroDni() + " ya está registrado en el sistema.");
+            return "admision/formulario";
+        }
     }
 }
