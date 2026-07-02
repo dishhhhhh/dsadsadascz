@@ -1,5 +1,4 @@
 package com.usil.is2.grupo3.admision.model;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -32,8 +31,7 @@ public class HistoriaClinica {
     @Column(name = "antecedentes_familiares", length = 255)
     private String antecedentesFamiliares;
 
-    public HistoriaClinica() {
-    }
+    public HistoriaClinica() {}
 
     // Getters y Setters
     public Integer getIdHistoriaClinica() { return idHistoriaClinica; }

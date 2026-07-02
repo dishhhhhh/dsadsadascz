@@ -1,12 +1,10 @@
 package com.usil.is2.grupo3.citas.model;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "medico")
 public class Medico {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_medico")
@@ -28,10 +26,8 @@ public class Medico {
     @Column(length = 100, nullable = false)
     private String especialidad;
 
-    public Medico() {
-    }
+    public Medico() {}
 
-    // Getters y Setters
     public Integer getIdMedico() { return idMedico; }
     public void setIdMedico(Integer idMedico) { this.idMedico = idMedico; }
 
