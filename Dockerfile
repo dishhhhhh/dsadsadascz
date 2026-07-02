@@ -4,9 +4,13 @@ WORKDIR /app
 COPY . .
 RUN gradle bootJar --no-daemon
 
-# Etapa 2: Imagen final de ejecución (ligera)
+# Etapa 2: Imagen final de ejecución
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/build/libs/is2.grupo3-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar app.jar"]
+
+# --- ESTA LÍNEA ES LA MAGIA ---
+ENV SERVER_PORT=${PORT}
+
+ENTRYPOINT ["sh", "-c", "java -jar app.jar"]
