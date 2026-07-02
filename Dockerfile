@@ -10,7 +10,5 @@ WORKDIR /app
 COPY --from=build /app/build/libs/is2.grupo3-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
 
-# --- ESTA LÍNEA ES LA MAGIA ---
-ENV SERVER_PORT=${PORT}
-
-ENTRYPOINT ["sh", "-c", "java -jar app.jar"]
+# Usamos la ejecución de Shell para asegurar la correcta sustitución de la variable $PORT
+ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=${PORT}"]
